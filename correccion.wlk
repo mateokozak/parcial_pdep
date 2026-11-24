@@ -64,11 +64,40 @@ class Funcionario {
 
 class PoderEjecutivo {
     var juezAmigo
+    const palabrasClave = []
 
-    method validar(causa, funcionario) = if(!causa.tieneJuez(juezAmigo)) throw new DomainException(message = "No tiene juez amigo")
+    method validar(causa, funcionario) { 
+        if(!causa.tieneJuez(juezAmigo)) {
+            throw new DomainException(message = "No tiene juez amigo")
+        }
+    }
+
+    method aceptaPropuesta(propuesta) = palabrasClave.any({palabra => propuesta.contieneEnDescripcion(palabra)})
 } 
 
 object ministro {
-    method validar(causa, funcionario) = if (!funcionario.patrimonio() > causa.perjuicioTotal() * 0.5) throw new DomainException(message = "No tiene patrimonio suficiente")
+    method validar(causa, funcionario) {
+        if (!funcionario.patrimonio() > causa.perjuicioTotal() * 0.5) {
+            throw new DomainException(message = "No tiene patrimonio suficiente")
+        }
+    }
+
+    method aceptaPropuesta(propuesta) = propuesta.esCorta()
+}
+
+class Propuesta {
+    const fechaPresentacion
+    var fechaCumplimiento
+    const descripcion
+
+    method fechaCumplimiento() = fechaCumplimiento
+
+    method postergar() {
+        fechaCumplimiento = fechaCumplimiento.plusYears(4)
+    }
+
+    method contieneEnDescripcion(palabra) = descripcion.contains(palabra)
+
+    method esCorta() = fechaCumplimiento < fechaPresentacion.plusYears(1)
 }
 
